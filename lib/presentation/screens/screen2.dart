@@ -14,10 +14,6 @@ class Screen2 extends StatelessWidget {
           children: [
             const Text('This is Screen 2'),
             ElevatedButton(
-              onPressed: () => context.go('/screen3'),
-              child: const Text('Go to Screen 3'),
-            ),
-            ElevatedButton(
               onPressed: () => context.go('/'),
               child: const Text('Go back to Screen 1'),
             ),
