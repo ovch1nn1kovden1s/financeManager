@@ -4,6 +4,6 @@ import '../application/cubit/app_cubit.dart';
 final getIt = GetIt.instance;
 
 void setupDI() {
-  // Регистрация Cubit
+  // регистрация Cubit
   getIt.registerLazySingleton<AppCubit>(() => AppCubit());
 }
