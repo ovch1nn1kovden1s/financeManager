@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class Screen2 extends StatelessWidget {
-  const Screen2({Key? key}) : super(key: key);
+  const Screen2({super.key});
 
   @override
   Widget build(BuildContext context) {

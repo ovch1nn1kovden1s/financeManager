@@ -5,7 +5,7 @@ import '../application/cubit/app_cubit.dart';
 import 'router.dart';
 
 class AppWidget extends StatelessWidget {
-  const AppWidget({Key? key}) : super(key: key);
+  const AppWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
