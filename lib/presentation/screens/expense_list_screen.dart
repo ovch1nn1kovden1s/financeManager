@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../application/cubit/expense_cubit.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/expense_model.dart';
 
 class ExpenseListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Загружаем траты при открытии экрана
     context.read<ExpenseCubit>().loadExpenses();
 
     return Scaffold(
@@ -26,7 +27,7 @@ class ExpenseListScreen extends StatelessWidget {
                 final expense = state.expenses[index];
                 return ListTile(
                   title: Text(expense.name),
-                  subtitle: Text('${expense.category} - ${expense.amount}'),
+                  subtitle: Text('${expense.category.name} - ${expense.amount}'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () => context.read<ExpenseCubit>().deleteExpense(expense.id),
@@ -40,6 +41,13 @@ class ExpenseListScreen extends StatelessWidget {
             return const Center(child: Text('Ошибка загрузки'));
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.go('/add-expense');
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
       ),
     );
   }

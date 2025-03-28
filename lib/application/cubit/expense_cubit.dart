@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/expense_model.dart';
 import '../../core/expense_repository.dart';
 
-// Определяем состояния
 abstract class ExpenseState {}
 
 class ExpenseLoading extends ExpenseState {}
@@ -27,7 +26,7 @@ class ExpenseCubit extends Cubit<ExpenseState> {
   Future<void> loadExpenses() async {
     try {
       emit(ExpenseLoading());
-      final expenses = await _repository.getAllExpenses(); // Асинхронный вызов
+      final expenses = await _repository.getAllExpenses();
       emit(ExpenseLoaded(expenses));
     } catch (e) {
       emit(ExpenseError('Не удалось загрузить траты: ${e.toString()}'));

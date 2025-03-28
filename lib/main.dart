@@ -10,23 +10,13 @@ import '../../core/expense_repository.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Инициализация Hive
   await Hive.initFlutter();
   
-  // Регистрация адаптера
   Hive.registerAdapter(ExpenseAdapter());
-  
-  // Открытие Box
-  final expenseBox = await Hive.openBox<Expense>('expenses');
+  Hive.registerAdapter(ExpenseCategoryAdapter());
 
-  if (expenseBox.isEmpty) {
-    await expenseBox.put(
-      '1',
-      Expense(id: '1', name: 'Test Expense', category: 'cat', amount: 100.0, date: DateTime.now()),
-    );
-  }
+  final expenseBox = await Hive.openBox<Expense>('expenses');
   
-  // Настройка DI
   setupDI();
   
   runApp(
@@ -34,7 +24,7 @@ void main() async {
       providers: [
         BlocProvider<ExpenseCubit>(
           create: (context) => ExpenseCubit(
-            ExpenseRepository(expenseBox), // Передаём объект Box<Expense>
+            ExpenseRepository(expenseBox),
           ),
         ),
       ],

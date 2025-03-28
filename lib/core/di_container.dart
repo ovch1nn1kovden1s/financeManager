@@ -8,7 +8,6 @@ import '../core/expense_model.dart';
 final getIt = GetIt.instance;
 
 void setupDI() {
-  // регистрация Cubit
   getIt.registerLazySingleton<AppCubit>(() => AppCubit());
 
   final expenseBox = Hive.box<Expense>('expenses');

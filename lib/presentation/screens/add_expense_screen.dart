@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../application/cubit/expense_cubit.dart';
-import '../../core/di_container.dart';
+import '../../core/expense_model.dart';
+import 'package:go_router/go_router.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   @override
@@ -10,8 +11,8 @@ class AddExpenseScreen extends StatefulWidget {
 
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final _nameController = TextEditingController();
-  final _categoryController = TextEditingController();
   final _amountController = TextEditingController();
+  ExpenseCategory? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +26,23 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               controller: _nameController,
               decoration: InputDecoration(labelText: 'Название'),
             ),
-            TextField(
-              controller: _categoryController,
+            SizedBox(height: 16),
+            DropdownButtonFormField<ExpenseCategory>(
+              value: _selectedCategory,
               decoration: InputDecoration(labelText: 'Категория'),
+              items: ExpenseCategory.values.map((category) {
+                return DropdownMenuItem<ExpenseCategory>(
+                  value: category,
+                  child: Text(category.name),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value;
+                });
+              },
             ),
+            SizedBox(height: 16),
             TextField(
               controller: _amountController,
               decoration: InputDecoration(labelText: 'Сумма'),
@@ -37,15 +51,26 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BlocProvider(
-                      create: (_) => getIt<ExpenseCubit>(), // Передаем ExpenseCubit из GetIt
-                      child: AddExpenseScreen(),
+                final name = _nameController.text;
+                final category = _selectedCategory;
+                final amount = double.tryParse(_amountController.text);
+
+                if (name.isNotEmpty && category != null && amount != null) {
+                  context.read<ExpenseCubit>().addExpense(
+                    Expense(
+                      id: DateTime.now().toString(),
+                      name: name,
+                      category: category,
+                      amount: amount,
+                      date: DateTime.now(),
                     ),
-                  ),
-                );
+                  );
+                  context.go('/expense-list');
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Пожалуйста, заполните все поля корректно')),
+                  );
+                }
               },
               child: Text('Добавить трату'),
             )
