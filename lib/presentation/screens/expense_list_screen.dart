@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/expense_model.dart';
 
 class ExpenseListScreen extends StatelessWidget {
+  const ExpenseListScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     context.read<ExpenseCubit>().loadExpenses();
@@ -21,19 +23,36 @@ class ExpenseListScreen extends StatelessWidget {
             if (state.expenses.isEmpty) {
               return const Center(child: Text('Список трат пуст'));
             }
-            return ListView.builder(
-              itemCount: state.expenses.length,
-              itemBuilder: (context, index) {
-                final expense = state.expenses[index];
-                return ListTile(
-                  title: Text(expense.name),
-                  subtitle: Text('${expense.category.name} - ${expense.amount}'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => context.read<ExpenseCubit>().deleteExpense(expense.id),
+            final categoryMap = <String, double>{};
+            for (var expense in state.expenses) {
+              categoryMap.update(
+                expense.category.name,
+                (value) => value + expense.amount,
+                ifAbsent: () => expense.amount,
+              );
+            }
+
+            return ListView(
+              children: categoryMap.entries.map((entry) {
+                final categoryName = entry.key;
+                final totalAmount = entry.value;
+
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.go(
+                        '/category-expenses/$categoryName',
+                        extra: state.expenses,
+                      );
+                    },
+                    child: ListTile(
+                      title: Text(categoryName),
+                      trailing: Text('Сумма: $totalAmount'),
+                    ),
                   ),
                 );
-              },
+              }).toList(),
             );
           } else if (state is ExpenseError) {
             return Center(child: Text(state.message));
@@ -46,8 +65,8 @@ class ExpenseListScreen extends StatelessWidget {
         onPressed: () {
           context.go('/add-expense');
         },
-        child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
       ),
     );
   }

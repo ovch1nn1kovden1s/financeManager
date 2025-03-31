@@ -26,7 +26,7 @@ class ExpenseCubit extends Cubit<ExpenseState> {
   Future<void> loadExpenses() async {
     try {
       emit(ExpenseLoading());
-      final expenses = await _repository.getAllExpenses();
+      final expenses = _repository.getAllExpenses();
       emit(ExpenseLoaded(expenses));
     } catch (e) {
       emit(ExpenseError('Не удалось загрузить траты: ${e.toString()}'));

@@ -5,6 +5,8 @@ import '../../core/expense_model.dart';
 import 'package:go_router/go_router.dart';
 
 class AddExpenseScreen extends StatefulWidget {
+  const AddExpenseScreen({super.key});
+
   @override
   _AddExpenseScreenState createState() => _AddExpenseScreenState();
 }
@@ -17,7 +19,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Добавить трату')),
+      appBar: AppBar(
+        title: Text('Добавить трату'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.go('/expense-list');
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
