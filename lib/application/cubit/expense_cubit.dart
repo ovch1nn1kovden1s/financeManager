@@ -8,8 +8,9 @@ class ExpenseLoading extends ExpenseState {}
 
 class ExpenseLoaded extends ExpenseState {
   final List<Expense> expenses;
+  final Map<String, double> categoryMap;
 
-  ExpenseLoaded(this.expenses);
+  ExpenseLoaded(this.expenses, this.categoryMap);
 }
 
 class ExpenseError extends ExpenseState {
@@ -27,7 +28,10 @@ class ExpenseCubit extends Cubit<ExpenseState> {
     try {
       emit(ExpenseLoading());
       final expenses = _repository.getAllExpenses();
-      emit(ExpenseLoaded(expenses));
+
+      final categoryMap = _generateCategoryMap(expenses);
+
+      emit(ExpenseLoaded(expenses, categoryMap));
     } catch (e) {
       emit(ExpenseError('Не удалось загрузить траты: ${e.toString()}'));
     }
@@ -49,5 +53,17 @@ class ExpenseCubit extends Cubit<ExpenseState> {
     } catch (e) {
       emit(ExpenseError('Не удалось удалить трату: ${e.toString()}'));
     }
+  }
+
+  Map<String, double> _generateCategoryMap(List<Expense> expenses) {
+    final categoryMap = <String, double>{};
+    for (var expense in expenses) {
+      categoryMap.update(
+        expense.category.name,
+        (value) => value + expense.amount,
+        ifAbsent: () => expense.amount,
+      );
+    }
+    return categoryMap;
   }
 }

@@ -4,13 +4,22 @@ import '../../application/cubit/expense_cubit.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/expense_model.dart';
 
-class ExpenseListScreen extends StatelessWidget {
+class ExpenseListScreen extends StatefulWidget {
   const ExpenseListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    context.read<ExpenseCubit>().loadExpenses();
+  _ExpenseListScreenState createState() => _ExpenseListScreenState();
+}
 
+class _ExpenseListScreenState extends State<ExpenseListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ExpenseCubit>().loadExpenses();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Список трат'),
@@ -20,32 +29,19 @@ class ExpenseListScreen extends StatelessWidget {
           if (state is ExpenseLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ExpenseLoaded) {
-            if (state.expenses.isEmpty) {
+            if (state.categoryMap.isEmpty) {
               return const Center(child: Text('Список трат пуст'));
-            }
-            final categoryMap = <String, double>{};
-            for (var expense in state.expenses) {
-              categoryMap.update(
-                expense.category.name,
-                (value) => value + expense.amount,
-                ifAbsent: () => expense.amount,
-              );
             }
 
             return ListView(
-              children: categoryMap.entries.map((entry) {
+              children: state.categoryMap.entries.map((entry) {
                 final categoryName = entry.key;
                 final totalAmount = entry.value;
 
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      context.go(
-                        '/category-expenses/$categoryName',
-                        extra: state.expenses,
-                      );
-                    },
+                    onPressed: () => _navigateToCategory(context, categoryName, state.expenses),
                     child: ListTile(
                       title: Text(categoryName),
                       trailing: Text('Сумма: $totalAmount'),
@@ -69,5 +65,9 @@ class ExpenseListScreen extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void _navigateToCategory(BuildContext context, String categoryName, List<Expense> expenses) {
+    context.go('/category-expenses/$categoryName', extra: expenses);
   }
 }
